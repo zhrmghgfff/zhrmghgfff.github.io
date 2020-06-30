@@ -316,394 +316,61 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">class MutiTask:OneTask &#123;</span><br><span class="line">    &#x2F;&#x2F;&#x2F;任务List</span><br><span class="line">    var tasks: [Task] &#x3D; [Task]()</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 状态</span><br><span class="line">    var state: State &#x3D; .idle</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 完成</span><br><span class="line">    var complete: ResultAction?</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 错误</span><br><span class="line">    var error: ResultAction?</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 结束回调</span><br><span class="line">    var endAction: AsyncTask.EndAction?</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 结束的任务个数</span><br><span class="line">    var endCount &#x3D; 0</span><br><span class="line"></span><br><span class="line">    init(_ tasks: [Task] &#x3D; [], complete: ResultAction? &#x3D; nil, error: ResultAction? &#x3D; nil) &#123;</span><br><span class="line">        self.tasks.append(contentsOf: tasks)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    func add(_ task: Task) &#123;</span><br><span class="line">        &#x2F;&#x2F;TODO</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    func start() &#123;</span><br><span class="line">        &#x2F;&#x2F;TODO</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    func end(_ state: State) &#123;</span><br><span class="line">        &#x2F;&#x2F;TODO</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    func cancel() &#123;</span><br><span class="line">        &#x2F;&#x2F;TODO</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="状态"><a href="#状态" class="headerlink" title="状态"></a>状态</h2><p>任务的状态：<code>完成</code> 、<code>错误</code> 、<code>取消</code>，多任务时，状态有点不够用，未添加时，应该是<code>空闲</code>状态，开始执行任务时，应该是<code>执行中</code>，完成时，是所有任务都完成，<code>完成所有</code>，下面是扩展后的状态：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;&#x2F; 任务状态</span><br><span class="line">enum State &#123;</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 空闲</span><br><span class="line">    case idle</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 任务中</span><br><span class="line">    case doing</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 完成</span><br><span class="line">    case complete(Result)</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 错误</span><br><span class="line">    case error(Result)</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 取消</span><br><span class="line">    case cancel</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 多任务</span><br><span class="line">    case completeAll([Result])</span><br><span class="line">&#125;</span><br><span class="line">&#96;&#96;&#96; </span><br><span class="line"></span><br><span class="line">## 结果</span><br><span class="line"></span><br><span class="line">结果在多任务的时候也要添加一个多任务的结果：</span><br></pre></td></tr></table></figure>
-<p>/// 结果<br>struct Result {<br>    /// 状态码<br>    var code: Int<br>    /// 信息<br>    var message: String<br>    /// 数据<br>    var data: Any?<br>    /// 多任务结果<br>    var results: [Result]</p>
-<pre><code>init(_ code: Int,_ message: String = &quot;&quot;,_ data: Any? = nil,_ results: [Result] = []) {
-    self.code = code
-    self.message = message
-    self.data = data
-    self.results = results
-}</code></pre><p>}</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">扩展 &#96;extension&#96;</span><br></pre></td></tr></table></figure>
-<p>extension AsyncTask.Result {<br>    static func results(_ code: Int,_ message: String?,_ data: Any? = nil,_ results: [AsyncTask.Result] = []) -&gt; AsyncTask.Result {<br>        return AsyncTask.Result(code,message ?? “”,data,results)<br>    }</p>
-<pre><code>static func results(_ results: [AsyncTask.Result],_ code: Int = 200,_ message: String? = nil) -&gt; AsyncTask.Result {
-    return AsyncTask.Result(code,message ?? &quot;&quot;,nil,results)
-}</code></pre><p>}</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">## Task 实现</span><br><span class="line"></span><br><span class="line">现在来实现&#96;Task&#96;，填充所有逻辑：</span><br></pre></td></tr></table></figure>
-<p>func start() {</p>
-<pre><code>lock()
-guard case .idle = state else {
-    unlock()
-    return
-}
-
-state = .doing
-unlock()
-
-AsyncTask.startTask { [weak self] in
-    guard let self = self else {
-        return
-    }
-
-    self.task(self)
-}</code></pre><p>}</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#96;lock()&#96; 、&#96;unlock()&#96; 线程锁，因为任务是异步执行，状态的判断很容易有多线程问题，数据不一致，每次判断都得加锁，保证数据的线程安全。</span><br><span class="line">&#96;AsyncTask.startTask&#96; 是一个类方法，所有的任务都是异步执行，所以声明了一个类属性的 &#96;queue&#96; ，一个并发队列。</span><br></pre></td></tr></table></figure>
-<p>/// 队列<br>fileprivate static var queue: DispatchQueue = DispatchQueue(label: “AsyncTask”, qos: .default, attributes: .concurrent)<br>/// 开始任务<br>/// - Parameter action: 任务 block<br>fileprivate static func startTask(_ action:@escaping Action) {<br>    self.queue.async(execute: action)<br>}</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">接下来实现完成方法，任务执行后，需要手动调用的。</span><br></pre></td></tr></table></figure>
-<p>func end(_ state:State) {</p>
-<pre><code>lock()
-self.state = state
-unlock()
-
-switch state {
-    case .complete(let result):
-        if let complete = complete {
-            complete(result)
-        }
-    case .error(let result):
-        if let error = error  {
-            error(result)
-        }
-    default:
-        break
-}
-
-if let endAction = endAction {
-    endAction(state)
-}</code></pre><p>}</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">实现取消方法。</span><br></pre></td></tr></table></figure>
-<p>func cancel() {</p>
-<pre><code>lock()
-guard case .idle = state else {
-    unlock()
-    return
-}
-
-state = .cancel
-unlock()
-
-if let endAction = endAction {
-    endAction(state)
-}</code></pre><p>}</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">## MutiTask 实现</span><br><span class="line"></span><br><span class="line">多任务的核心就是添加子任务，绑定一些回调，通过回调来掌控子任务的状态。</span><br></pre></td></tr></table></figure>
-<p>func add(_ task:Task) {<br>    lock()<br>    guard case .idle = state else {<br>        print(“MutiTask is doing, can’t add new task!”)<br>        unlock()<br>        return<br>    }<br>    unlock()</p>
-<pre><code>self.tasks.append(task)
-
-task.complete = { [weak self] (result) in
-    guard let self = self else {
-        return
-    }
-
-    if let complete = self.complete {
-        complete(result)
-    }
-}
-
-task.error = { [weak self] (result) in
-    guard let self = self else {
-        return
-    }
-
-    if let error = self.error {
-        error(result)
-    }
-}
-
-task.endAction = { [weak self] (state) in
-    guard let self = self else {
-        return
-    }
-
-    self.lock()
-    self.endCount += 1
-    self.unlock()
-
-    self.end(state)
-}</code></pre><p>}</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&gt; 添加方法，开始的判断，是假设，有任务开始后，禁止添加，减少复杂情况的出现，保证我们的任务是简单的多任务并发。</span><br><span class="line">&gt; 在&#96;完成&#96; &#96;错误&#96; 的回调里面，调用 &#96;MutiTask&#96; 相应的回调，相当于 &#96;MutiTask&#96; 中的回调是通用回调。</span><br><span class="line">&gt; &#96;endAction&#96;回调中，记录已完成的子任务数量，并调用&#96;end(state)&#96;方法。</span><br><span class="line"></span><br><span class="line">下面开始实现开始方法：</span><br></pre></td></tr></table></figure>
-<p>func start() {<br>    lock()<br>    if case .idle = state {<br>        state = .doing<br>    }<br>    unlock()</p>
-<pre><code>for task in tasks {
-    task.start()
-}</code></pre><p>}</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">结束方法，这里主要是子方法完成后，会回调到这里。</span><br></pre></td></tr></table></figure>
-<p>func end(_ state: State) {<br>    lock()<br>    guard case .doing = self.state else {<br>        unlock()<br>        return<br>    }</p>
-<pre><code>let count = endCount
-unlock()
-
-if count == tasks.count {
-
-    var list = [Result]()
-    for task in tasks {
-
-        switch task.state {
-            case .complete(let result):
-                list.append(result)
-            case .error(let result):
-                list.append(result)
-            default:
-                break
-        }
-
-    }
-    self.state = .completeAll(list)
-
-    if let complete = self.complete {
-        complete(.results(list))
-    }
-
-    if let endAction = endAction {
-        endAction(self.state)
-    }
-}</code></pre><p>}</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&gt; 根据已完成的子任务数，当所有的任务都完成后，再统调用一个 &#96;complete&#96; 回调，传递所有子任务的状态。</span><br><span class="line">&gt; PS：如有需要可以单独顶一个 &#96;completeAll&#96; 回调，来处理所有任务执行的结果。</span><br><span class="line"></span><br><span class="line">实现取消方法：</span><br></pre></td></tr></table></figure>
-<p>func cancel() {<br>    lock()<br>    self.state = .cancel<br>    unlock()</p>
-<pre><code>for task in tasks {
-    task.cancel()
-}</code></pre><p>}</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">## AsyncTask 实现</span><br><span class="line"></span><br><span class="line">任务处理完了，下面就需要实现我们的 &#96;AsyncTask&#96;，由于任务的处理都抽离出来了，本身的处理就少了很多：</span><br></pre></td></tr></table></figure>
-<p>class AsyncTask {</p>
-<pre><code>///记录总创建的个数
-fileprivate static var count:Int = 0
-/// 标记，区分每个不同的对象
-fileprivate var tag: Int
-
-/// 下一个 Task
-fileprivate var nextTask: AsyncTask?
-/// 任务
-fileprivate var task: OneTask?
-
-/// 错误处理已经添加的回调
-fileprivate var errorDidAdded: ErrorCallback?
-
-/// 队列
-fileprivate static var queue: DispatchQueue = DispatchQueue(label: &quot;AsyncTask&quot;, qos: .default, attributes: .concurrent)
-
-init() {
-
-    tag = AsyncTask.count
-
-    print(&quot;init : \(tag)&quot;)
-
-    AsyncTask.count += 1
-}
-
-deinit {
-    print(&quot;deinit : \(tag)&quot;)
-}
-
-// MARK: 任务处理
-
-/// 任务
-/// - Parameter task: block 任务
-/// - Returns: AsyncTask
-@discardableResult
-func task(_ task:@escaping TaskAction) -&gt; AsyncTask {
-
-    addTask(task)
-    start()
-
-    return self
-}
-
-/// 开始任务
-/// - Returns: AsyncTask
-@discardableResult
-func start() -&gt; AsyncTask {
-    task?.start()
-    return self
-}
-
-/// 下一个任务
-/// - Parameter action: block 任务
-/// - Returns: MyGCD
-@discardableResult
-func next(_ task:@escaping TaskAction) -&gt; AsyncTask {
-
-    nextTask = createTask(task)
-
-    return nextTask!
-}
-
-/// 完成处理
-/// - Parameter action: block 处理
-/// - Returns: MyGCD
-@discardableResult
-func complete(_ action:@escaping ResultAction) -&gt; AsyncTask {
-    task?.complete = action
-    return self
-}
-
-/// 错误处理
-/// - Parameter action: block 处理
-/// - Returns: MyGCD
-@discardableResult
-func error(_ action:@escaping ResultAction) -&gt; AsyncTask {
-    task?.error = action
-    transmitError(action)
-
-    return self
-}
-
-/// 任务结束
-fileprivate func end(_ state: State) {
-    switch state {
-        case .complete(_):
-            fallthrough
-        case .completeAll(_):
-            if let nextTask = nextTask {
-                nextTask.start()
-        }
-        case .error(_):
-            nextTask?.task?.cancel()
-        case .cancel:
-            nextTask?.task?.cancel()
-        default:
-            break
-    }
-
-    nextTask = nil
-}
-
-// MARK: 私有函数
-fileprivate func addTask(_ task:@escaping TaskAction) {
-    self.task = Task(task)
-
-    var gcd:AsyncTask? = self
-    self.task?.endAction = { state in
-        gcd?.end(state)
-
-        gcd = nil
-    }
-}</code></pre><p>}</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">每个方法的实现，都比较简单，就不一一描述了。</span><br><span class="line"></span><br><span class="line">## AsyncMutiTask 实现</span><br><span class="line"></span><br><span class="line">&#96;AsyncMutiTask&#96; 与 &#96;AsyncTask&#96; 的区别就是，添加多任务，执行多任务，直接上代码：</span><br></pre></td></tr></table></figure>
-<p>class AsyncMutiTask: AsyncTask {</p>
-<pre><code>override init() {
-    super.init()
-
-    self.task = MutiTask()
-    var gcd:AsyncTask? = self
-    self.task?.endAction = { state in
-        gcd?.end(state)
-
-        gcd = nil
-    }
-}
-
-/// 任务
-/// - Parameter tasks: block 数组
-/// - Returns: AsyncTask
-@discardableResult
-func tasks(_ tasks:[TaskAction]) -&gt; AsyncTask {
-    addTasks(tasks)
-    start()
-    return self
-}
-
-/// 开始任务
-/// - Returns: AsyncTask
-@discardableResult
-override func start() -&gt; AsyncTask {
-    self.task?.start()
-    return self
-}
-
-// MARK: 私有函数
-fileprivate func addTasks(_ tasks:[TaskAction]) {
-    guard let mutiTask = self.task as? MutiTask else {
-        return
-    }
-
-    for task in tasks {
-        mutiTask.add(Task(task))
-    }
-}
-
-override fileprivate func addTask(_ task: @escaping TaskAction) {
-    guard let mutiTask = self.task as? MutiTask else {
-        return
-    }
-    mutiTask.add(Task(task))
-}</code></pre><p>}</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">其他大部分逻辑都抽离到 &#96;MutiTask&#96;中了，实际代码很少。</span><br><span class="line"></span><br><span class="line">下面添加一个一些辅助函数，还有快捷函数，方便快捷调用：</span><br></pre></td></tr></table></figure>
-<p>// MARK: 私有辅助函数<br>extension AsyncTask {</p>
-<pre><code>/// 创建Task
-fileprivate func createTask(_ task: @escaping TaskAction) -&gt; AsyncTask {
-
-    let newTask = AsyncTask()
-    newTask.errorDidAdded = {[weak self] action in
-        if self?.task?.error == nil {
-            self?.error(action)
-        }else{
-            self?.transmitError(action)
-        }
-    }
-
-    newTask.addTask(task)
-
-    return newTask
-}
-
-/// 创建MutiTask
-fileprivate func createMutiTask(_ tasks:[TaskAction]) -&gt; AsyncTask {
-
-    let newTask = AsyncMutiTask()
-    newTask.errorDidAdded = {[weak self] action in
-        if self?.task?.error == nil {
-            self?.error(action)
-        }else{
-            self?.transmitError(action)
-        }
-    }
-
-    newTask.addTasks(tasks)
-
-    return newTask
-}
-
-/// 传递Error处理
-fileprivate func transmitError(_ action:@escaping ResultAction) {
-
-    if let errorDidAdded = errorDidAdded {
-        errorDidAdded(action)
-    }
-}
-
-/// 开始任务
-/// - Parameter action: 任务 block
-fileprivate static func startTask(_ action:@escaping Action) {
-    self.queue.async(execute: action)
-}</code></pre><p>}</p>
-<p>// MARK: 快捷方法<br>extension AsyncTask {</p>
-<pre><code>/// 下一组任务
-/// - Parameter tasks: 任务数组
-/// - Returns: AsyncTask
-func nexts(_ tasks:[TaskAction]) -&gt; AsyncTask {
-
-    nextTask = createMutiTask(tasks)
-
-    return nextTask!
-}
-
-/// 任务
-/// - Parameter task: block 任务
-/// - Returns: AsyncTask
-@discardableResult
-static func task(_ task:@escaping TaskAction) -&gt; AsyncTask {
-    return AsyncTask().task(task)
-}
-
-/// 任务
-/// - Parameter tasks: block 数组
-/// - Returns: AsyncTask
-@discardableResult
-static func tasks(_ tasks:[TaskAction]) -&gt; AsyncTask {
-    return AsyncMutiTask().tasks(tasks)
-}</code></pre><p>}</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">## 测试</span><br><span class="line"></span><br><span class="line">测试代码：</span><br></pre></td></tr></table></figure>
-<p>AsyncTask.task { task in<br>    createTask(“任务1”) {<br>        task.end(.sucess())<br>    }<br>}.complete{ (result) in<br>    print(“任务1 complete: (result)”)<br>}.nexts([<br>    { task in<br>        createTask(“任务2_1”) {<br>            task.end(.complete(.result(200, “任务2_1 完成”)))<br>        }<br>    },{ task in<br>        createTask(“任务2_2”) {<br>            task.end(.error(404,”任务2_2 完成”))<br>        }<br>    },{ task in<br>        createTask(“任务2_3”) {<br>            task.end(.complete(.result(200, “任务2_3 完成”)))<br>        }<br>    },{ task in<br>        createTask(“任务2_4”) {<br>            task.end(.error(404,”任务2_4 错误”))<br>        }<br>    },]).complete{ (result) in<br>        print(“任务 complete: (result)”)<br>}.error{ (result) in<br>    print(“任务有2 错误: (result)”)<br>}.next { task in<br>    createTask(“任务3”) {<br>        task.end(.sucess())<br>    }<br>}.complete{ (result) in<br>    print(“任务3 complete: (result)”)<br>}.error{ (result) in<br>    print(“任务有 错误: (result)”)<br>}<br>print(“发布任务完毕”)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">结果：</span><br></pre></td></tr></table></figure>
-<p>init : 0<br>init : 1<br>任务1 发布<br>任务1 开始<br>init : 2<br>发布任务完毕<br>任务1 结束<br>任务1 complete: Result(code: 200, message: “”, data: nil, results: [])<br>deinit : 0<br>任务2_1 发布<br>任务2_2 发布<br>任务2_3 发布<br>任务2_2 开始<br>任务2_3 开始<br>任务2_1 开始<br>任务2_4 发布<br>任务2_4 开始<br>任务2_2 结束<br>任务2_4 结束<br>任务2_1 结束<br>任务有2 错误: Result(code: 404, message: “任务2_2 完成”, data: nil, results: [])<br>任务2_3 结束<br>任务有2 错误: Result(code: 404, message: “任务2_4 错误”, data: nil, results: [])<br>任务 complete: Result(code: 200, message: “任务2_1 完成”, data: nil, results: [])<br>任务 complete: Result(code: 200, message: “任务2_3 完成”, data: nil, results: [])<br>任务 complete: Result(code: 200, message: “”, data: nil, results: [MLibDemo.AsyncTask.Result(code: 200, message: “任务2_1 完成”, data: nil, results: []), MLibDemo.AsyncTask.Result(code: 404, message: “任务2_2 完成”, data: nil, results: []), MLibDemo.AsyncTask.Result(code: 200, message: “任务2_3 完成”, data: nil, results: []), MLibDemo.AsyncTask.Result(code: 404, message: “任务2_4 错误”, data: nil, results: [])])<br>deinit : 1<br>任务3 发布<br>任务3 开始<br>任务3 结束<br>任务3 complete: Result(code: 200, message: “”, data: nil, results: [])<br>deinit : 2</p>
-<p>```</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&#x2F;&#x2F;&#x2F; 任务状态</span><br><span class="line">enum State &#123;</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 空闲</span><br><span class="line">    case idle</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 任务中</span><br><span class="line">    case doing</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 完成</span><br><span class="line">    case complete(Result)</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 错误</span><br><span class="line">    case error(Result)</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 取消</span><br><span class="line">    case cancel</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 多任务</span><br><span class="line">    case completeAll([Result])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p>结果在多任务的时候也要添加一个多任务的结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;&#x2F; 结果</span><br><span class="line">struct Result &#123;</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 状态码</span><br><span class="line">    var code: Int</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 信息</span><br><span class="line">    var message: String</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 数据</span><br><span class="line">    var data: Any?</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 多任务结果</span><br><span class="line">    var results: [Result]</span><br><span class="line"></span><br><span class="line">    init(_ code: Int,_ message: String &#x3D; &quot;&quot;,_ data: Any? &#x3D; nil,_ results: [Result] &#x3D; []) &#123;</span><br><span class="line">        self.code &#x3D; code</span><br><span class="line">        self.message &#x3D; message</span><br><span class="line">        self.data &#x3D; data</span><br><span class="line">        self.results &#x3D; results</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>扩展 <code>extension</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">extension AsyncTask.Result &#123;</span><br><span class="line">    static func results(_ code: Int,_ message: String?,_ data: Any? &#x3D; nil,_ results: [AsyncTask.Result] &#x3D; []) -&gt; AsyncTask.Result &#123;</span><br><span class="line">        return AsyncTask.Result(code,message ?? &quot;&quot;,data,results)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    static func results(_ results: [AsyncTask.Result],_ code: Int &#x3D; 200,_ message: String? &#x3D; nil) -&gt; AsyncTask.Result &#123;</span><br><span class="line">        return AsyncTask.Result(code,message ?? &quot;&quot;,nil,results)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Task-实现"><a href="#Task-实现" class="headerlink" title="Task 实现"></a>Task 实现</h2><p>现在来实现<code>Task</code>，填充所有逻辑：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">func start() &#123;</span><br><span class="line"></span><br><span class="line">    lock()</span><br><span class="line">    guard case .idle &#x3D; state else &#123;</span><br><span class="line">        unlock()</span><br><span class="line">        return</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    state &#x3D; .doing</span><br><span class="line">    unlock()</span><br><span class="line"></span><br><span class="line">    AsyncTask.startTask &#123; [weak self] in</span><br><span class="line">        guard let self &#x3D; self else &#123;</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        self.task(self)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>lock()</code> 、<code>unlock()</code> 线程锁，因为任务是异步执行，状态的判断很容易有多线程问题，数据不一致，每次判断都得加锁，保证数据的线程安全。<br><code>AsyncTask.startTask</code> 是一个类方法，所有的任务都是异步执行，所以声明了一个类属性的 <code>queue</code> ，一个并发队列。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;&#x2F; 队列</span><br><span class="line">fileprivate static var queue: DispatchQueue &#x3D; DispatchQueue(label: &quot;AsyncTask&quot;, qos: .default, attributes: .concurrent)</span><br><span class="line">&#x2F;&#x2F;&#x2F; 开始任务</span><br><span class="line">&#x2F;&#x2F;&#x2F; - Parameter action: 任务 block</span><br><span class="line">fileprivate static func startTask(_ action:@escaping Action) &#123;</span><br><span class="line">    self.queue.async(execute: action)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来实现完成方法，任务执行后，需要手动调用的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">func end(_ state:State) &#123;</span><br><span class="line"></span><br><span class="line">    lock()</span><br><span class="line">    self.state &#x3D; state</span><br><span class="line">    unlock()</span><br><span class="line"></span><br><span class="line">    switch state &#123;</span><br><span class="line">        case .complete(let result):</span><br><span class="line">            if let complete &#x3D; complete &#123;</span><br><span class="line">                complete(result)</span><br><span class="line">            &#125;</span><br><span class="line">        case .error(let result):</span><br><span class="line">            if let error &#x3D; error  &#123;</span><br><span class="line">                error(result)</span><br><span class="line">            &#125;</span><br><span class="line">        default:</span><br><span class="line">            break</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if let endAction &#x3D; endAction &#123;</span><br><span class="line">        endAction(state)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现取消方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">func cancel() &#123;</span><br><span class="line"></span><br><span class="line">    lock()</span><br><span class="line">    guard case .idle &#x3D; state else &#123;</span><br><span class="line">        unlock()</span><br><span class="line">        return</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    state &#x3D; .cancel</span><br><span class="line">    unlock()</span><br><span class="line"></span><br><span class="line">    if let endAction &#x3D; endAction &#123;</span><br><span class="line">        endAction(state)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="MutiTask-实现"><a href="#MutiTask-实现" class="headerlink" title="MutiTask 实现"></a>MutiTask 实现</h2><p>多任务的核心就是添加子任务，绑定一些回调，通过回调来掌控子任务的状态。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">func add(_ task:Task) &#123;</span><br><span class="line">    lock()</span><br><span class="line">    guard case .idle &#x3D; state else &#123;</span><br><span class="line">        print(&quot;MutiTask is doing, can&#39;t add new task!&quot;)</span><br><span class="line">        unlock()</span><br><span class="line">        return</span><br><span class="line">    &#125;</span><br><span class="line">    unlock()</span><br><span class="line"></span><br><span class="line">    self.tasks.append(task)</span><br><span class="line"></span><br><span class="line">    task.complete &#x3D; &#123; [weak self] (result) in</span><br><span class="line">        guard let self &#x3D; self else &#123;</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if let complete &#x3D; self.complete &#123;</span><br><span class="line">            complete(result)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    task.error &#x3D; &#123; [weak self] (result) in</span><br><span class="line">        guard let self &#x3D; self else &#123;</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if let error &#x3D; self.error &#123;</span><br><span class="line">            error(result)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    task.endAction &#x3D; &#123; [weak self] (state) in</span><br><span class="line">        guard let self &#x3D; self else &#123;</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        self.lock()</span><br><span class="line">        self.endCount +&#x3D; 1</span><br><span class="line">        self.unlock()</span><br><span class="line">        </span><br><span class="line">        self.end(state)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>添加方法，开始的判断，是假设，有任务开始后，禁止添加，减少复杂情况的出现，保证我们的任务是简单的多任务并发。<br>在<code>完成</code> <code>错误</code> 的回调里面，调用 <code>MutiTask</code> 相应的回调，相当于 <code>MutiTask</code> 中的回调是通用回调。<br><code>endAction</code>回调中，记录已完成的子任务数量，并调用<code>end(state)</code>方法。</p>
+</blockquote>
+<p>下面开始实现开始方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">func start() &#123;</span><br><span class="line">    lock()</span><br><span class="line">    if case .idle &#x3D; state &#123;</span><br><span class="line">        state &#x3D; .doing</span><br><span class="line">    &#125;</span><br><span class="line">    unlock()</span><br><span class="line"></span><br><span class="line">    for task in tasks &#123;</span><br><span class="line">        task.start()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结束方法，这里主要是子方法完成后，会回调到这里。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">func end(_ state: State) &#123;</span><br><span class="line">    lock()</span><br><span class="line">    guard case .doing &#x3D; self.state else &#123;</span><br><span class="line">        unlock()</span><br><span class="line">        return</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    let count &#x3D; endCount</span><br><span class="line">    unlock()</span><br><span class="line"></span><br><span class="line">    if count &#x3D;&#x3D; tasks.count &#123;</span><br><span class="line"></span><br><span class="line">        var list &#x3D; [Result]()</span><br><span class="line">        for task in tasks &#123;</span><br><span class="line"></span><br><span class="line">            switch task.state &#123;</span><br><span class="line">                case .complete(let result):</span><br><span class="line">                    list.append(result)</span><br><span class="line">                case .error(let result):</span><br><span class="line">                    list.append(result)</span><br><span class="line">                default:</span><br><span class="line">                    break</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        self.state &#x3D; .completeAll(list)</span><br><span class="line"></span><br><span class="line">        if let complete &#x3D; self.complete &#123;</span><br><span class="line">            complete(.results(list))</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if let endAction &#x3D; endAction &#123;</span><br><span class="line">            endAction(self.state)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>根据已完成的子任务数，当所有的任务都完成后，再统调用一个 <code>complete</code> 回调，传递所有子任务的状态。<br>PS：如有需要可以单独顶一个 <code>completeAll</code> 回调，来处理所有任务执行的结果。</p>
+</blockquote>
+<p>实现取消方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">func cancel() &#123;</span><br><span class="line">    lock()</span><br><span class="line">    self.state &#x3D; .cancel</span><br><span class="line">    unlock()</span><br><span class="line"></span><br><span class="line">    for task in tasks &#123;</span><br><span class="line">        task.cancel()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="AsyncTask-实现"><a href="#AsyncTask-实现" class="headerlink" title="AsyncTask 实现"></a>AsyncTask 实现</h2><p>任务处理完了，下面就需要实现我们的 <code>AsyncTask</code>，由于任务的处理都抽离出来了，本身的处理就少了很多：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line">class AsyncTask &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F;记录总创建的个数</span><br><span class="line">    fileprivate static var count:Int &#x3D; 0</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 标记，区分每个不同的对象</span><br><span class="line">    fileprivate var tag: Int</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 下一个 Task</span><br><span class="line">    fileprivate var nextTask: AsyncTask?</span><br><span class="line">    &#x2F;&#x2F;&#x2F; 任务</span><br><span class="line">    fileprivate var task: OneTask?</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 错误处理已经添加的回调</span><br><span class="line">    fileprivate var errorDidAdded: ErrorCallback?</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 队列</span><br><span class="line">    fileprivate static var queue: DispatchQueue &#x3D; DispatchQueue(label: &quot;AsyncTask&quot;, qos: .default, attributes: .concurrent)</span><br><span class="line"></span><br><span class="line">    init() &#123;</span><br><span class="line"></span><br><span class="line">        tag &#x3D; AsyncTask.count</span><br><span class="line"></span><br><span class="line">        print(&quot;init : \(tag)&quot;)</span><br><span class="line"></span><br><span class="line">        AsyncTask.count +&#x3D; 1</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    deinit &#123;</span><br><span class="line">        print(&quot;deinit : \(tag)&quot;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; MARK: 任务处理</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 任务</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Parameter task: block 任务</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Returns: AsyncTask</span><br><span class="line">    @discardableResult</span><br><span class="line">    func task(_ task:@escaping TaskAction) -&gt; AsyncTask &#123;</span><br><span class="line"></span><br><span class="line">        addTask(task)</span><br><span class="line">        start()</span><br><span class="line"></span><br><span class="line">        return self</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 开始任务</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Returns: AsyncTask</span><br><span class="line">    @discardableResult</span><br><span class="line">    func start() -&gt; AsyncTask &#123;</span><br><span class="line">        task?.start()</span><br><span class="line">        return self</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 下一个任务</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Parameter action: block 任务</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Returns: MyGCD</span><br><span class="line">    @discardableResult</span><br><span class="line">    func next(_ task:@escaping TaskAction) -&gt; AsyncTask &#123;</span><br><span class="line"></span><br><span class="line">        nextTask &#x3D; createTask(task)</span><br><span class="line"></span><br><span class="line">        return nextTask!</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 完成处理</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Parameter action: block 处理</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Returns: MyGCD</span><br><span class="line">    @discardableResult</span><br><span class="line">    func complete(_ action:@escaping ResultAction) -&gt; AsyncTask &#123;</span><br><span class="line">        task?.complete &#x3D; action</span><br><span class="line">        return self</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 错误处理</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Parameter action: block 处理</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Returns: MyGCD</span><br><span class="line">    @discardableResult</span><br><span class="line">    func error(_ action:@escaping ResultAction) -&gt; AsyncTask &#123;</span><br><span class="line">        task?.error &#x3D; action</span><br><span class="line">        transmitError(action)</span><br><span class="line"></span><br><span class="line">        return self</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 任务结束</span><br><span class="line">    fileprivate func end(_ state: State) &#123;</span><br><span class="line">        switch state &#123;</span><br><span class="line">            case .complete(_):</span><br><span class="line">                fallthrough</span><br><span class="line">            case .completeAll(_):</span><br><span class="line">                if let nextTask &#x3D; nextTask &#123;</span><br><span class="line">                    nextTask.start()</span><br><span class="line">            &#125;</span><br><span class="line">            case .error(_):</span><br><span class="line">                nextTask?.task?.cancel()</span><br><span class="line">            case .cancel:</span><br><span class="line">                nextTask?.task?.cancel()</span><br><span class="line">            default:</span><br><span class="line">                break</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        nextTask &#x3D; nil</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; MARK: 私有函数</span><br><span class="line">    fileprivate func addTask(_ task:@escaping TaskAction) &#123;</span><br><span class="line">        self.task &#x3D; Task(task)</span><br><span class="line"></span><br><span class="line">        var gcd:AsyncTask? &#x3D; self</span><br><span class="line">        self.task?.endAction &#x3D; &#123; state in</span><br><span class="line">            gcd?.end(state)</span><br><span class="line"></span><br><span class="line">            gcd &#x3D; nil</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>每个方法的实现，都比较简单，就不一一描述了。</p>
+<h2 id="AsyncMutiTask-实现"><a href="#AsyncMutiTask-实现" class="headerlink" title="AsyncMutiTask 实现"></a>AsyncMutiTask 实现</h2><p><code>AsyncMutiTask</code> 与 <code>AsyncTask</code> 的区别就是，添加多任务，执行多任务，直接上代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">class AsyncMutiTask: AsyncTask &#123;</span><br><span class="line"></span><br><span class="line">    override init() &#123;</span><br><span class="line">        super.init()</span><br><span class="line"></span><br><span class="line">        self.task &#x3D; MutiTask()</span><br><span class="line">        var gcd:AsyncTask? &#x3D; self</span><br><span class="line">        self.task?.endAction &#x3D; &#123; state in</span><br><span class="line">            gcd?.end(state)</span><br><span class="line"></span><br><span class="line">            gcd &#x3D; nil</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 任务</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Parameter tasks: block 数组</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Returns: AsyncTask</span><br><span class="line">    @discardableResult</span><br><span class="line">    func tasks(_ tasks:[TaskAction]) -&gt; AsyncTask &#123;</span><br><span class="line">        addTasks(tasks)</span><br><span class="line">        start()</span><br><span class="line">        return self</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 开始任务</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Returns: AsyncTask</span><br><span class="line">    @discardableResult</span><br><span class="line">    override func start() -&gt; AsyncTask &#123;</span><br><span class="line">        self.task?.start()</span><br><span class="line">        return self</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; MARK: 私有函数</span><br><span class="line">    fileprivate func addTasks(_ tasks:[TaskAction]) &#123;</span><br><span class="line">        guard let mutiTask &#x3D; self.task as? MutiTask else &#123;</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        for task in tasks &#123;</span><br><span class="line">            mutiTask.add(Task(task))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    override fileprivate func addTask(_ task: @escaping TaskAction) &#123;</span><br><span class="line">        guard let mutiTask &#x3D; self.task as? MutiTask else &#123;</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line">        mutiTask.add(Task(task))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其他大部分逻辑都抽离到 <code>MutiTask</code>中了，实际代码很少。</p>
+<p>下面添加一个一些辅助函数，还有快捷函数，方便快捷调用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; MARK: 私有辅助函数</span><br><span class="line">extension AsyncTask &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 创建Task</span><br><span class="line">    fileprivate func createTask(_ task: @escaping TaskAction) -&gt; AsyncTask &#123;</span><br><span class="line"></span><br><span class="line">        let newTask &#x3D; AsyncTask()</span><br><span class="line">        newTask.errorDidAdded &#x3D; &#123;[weak self] action in</span><br><span class="line">            if self?.task?.error &#x3D;&#x3D; nil &#123;</span><br><span class="line">                self?.error(action)</span><br><span class="line">            &#125;else&#123;</span><br><span class="line">                self?.transmitError(action)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        newTask.addTask(task)</span><br><span class="line"></span><br><span class="line">        return newTask</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 创建MutiTask</span><br><span class="line">    fileprivate func createMutiTask(_ tasks:[TaskAction]) -&gt; AsyncTask &#123;</span><br><span class="line"></span><br><span class="line">        let newTask &#x3D; AsyncMutiTask()</span><br><span class="line">        newTask.errorDidAdded &#x3D; &#123;[weak self] action in</span><br><span class="line">            if self?.task?.error &#x3D;&#x3D; nil &#123;</span><br><span class="line">                self?.error(action)</span><br><span class="line">            &#125;else&#123;</span><br><span class="line">                self?.transmitError(action)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        newTask.addTasks(tasks)</span><br><span class="line"></span><br><span class="line">        return newTask</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 传递Error处理</span><br><span class="line">    fileprivate func transmitError(_ action:@escaping ResultAction) &#123;</span><br><span class="line"></span><br><span class="line">        if let errorDidAdded &#x3D; errorDidAdded &#123;</span><br><span class="line">            errorDidAdded(action)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 开始任务</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Parameter action: 任务 block</span><br><span class="line">    fileprivate static func startTask(_ action:@escaping Action) &#123;</span><br><span class="line">        self.queue.async(execute: action)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; MARK: 快捷方法</span><br><span class="line">extension AsyncTask &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 下一组任务</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Parameter tasks: 任务数组</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Returns: AsyncTask</span><br><span class="line">    func nexts(_ tasks:[TaskAction]) -&gt; AsyncTask &#123;</span><br><span class="line"></span><br><span class="line">        nextTask &#x3D; createMutiTask(tasks)</span><br><span class="line"></span><br><span class="line">        return nextTask!</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 任务</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Parameter task: block 任务</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Returns: AsyncTask</span><br><span class="line">    @discardableResult</span><br><span class="line">    static func task(_ task:@escaping TaskAction) -&gt; AsyncTask &#123;</span><br><span class="line">        return AsyncTask().task(task)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&#x2F; 任务</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Parameter tasks: block 数组</span><br><span class="line">    &#x2F;&#x2F;&#x2F; - Returns: AsyncTask</span><br><span class="line">    @discardableResult</span><br><span class="line">    static func tasks(_ tasks:[TaskAction]) -&gt; AsyncTask &#123;</span><br><span class="line">        return AsyncMutiTask().tasks(tasks)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试-1"><a href="#测试-1" class="headerlink" title="测试"></a>测试</h2><p>测试代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">AsyncTask.task &#123; task in</span><br><span class="line">    createTask(&quot;任务1&quot;) &#123;</span><br><span class="line">        task.end(.sucess())</span><br><span class="line">    &#125;</span><br><span class="line">&#125;.complete&#123; (result) in</span><br><span class="line">    print(&quot;任务1 complete: \(result)&quot;)</span><br><span class="line">&#125;.nexts([</span><br><span class="line">    &#123; task in</span><br><span class="line">        createTask(&quot;任务2_1&quot;) &#123;</span><br><span class="line">            task.end(.complete(.result(200, &quot;任务2_1 完成&quot;)))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,&#123; task in</span><br><span class="line">        createTask(&quot;任务2_2&quot;) &#123;</span><br><span class="line">            task.end(.error(404,&quot;任务2_2 完成&quot;))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,&#123; task in</span><br><span class="line">        createTask(&quot;任务2_3&quot;) &#123;</span><br><span class="line">            task.end(.complete(.result(200, &quot;任务2_3 完成&quot;)))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,&#123; task in</span><br><span class="line">        createTask(&quot;任务2_4&quot;) &#123;</span><br><span class="line">            task.end(.error(404,&quot;任务2_4 错误&quot;))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,]).complete&#123; (result) in</span><br><span class="line">        print(&quot;任务 complete: \(result)&quot;)</span><br><span class="line">&#125;.error&#123; (result) in</span><br><span class="line">    print(&quot;任务有2 错误: \(result)&quot;)</span><br><span class="line">&#125;.next &#123; task in</span><br><span class="line">    createTask(&quot;任务3&quot;) &#123;</span><br><span class="line">        task.end(.sucess())</span><br><span class="line">    &#125;</span><br><span class="line">&#125;.complete&#123; (result) in</span><br><span class="line">    print(&quot;任务3 complete: \(result)&quot;)</span><br><span class="line">&#125;.error&#123; (result) in</span><br><span class="line">    print(&quot;任务有 错误: \(result)&quot;)</span><br><span class="line">&#125;</span><br><span class="line">print(&quot;发布任务完毕&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">init : 0</span><br><span class="line">init : 1</span><br><span class="line">任务1 发布</span><br><span class="line">任务1 开始</span><br><span class="line">init : 2</span><br><span class="line">发布任务完毕</span><br><span class="line">任务1 结束</span><br><span class="line">任务1 complete: Result(code: 200, message: &quot;&quot;, data: nil, results: [])</span><br><span class="line">deinit : 0</span><br><span class="line">任务2_1 发布</span><br><span class="line">任务2_2 发布</span><br><span class="line">任务2_3 发布</span><br><span class="line">任务2_2 开始</span><br><span class="line">任务2_3 开始</span><br><span class="line">任务2_1 开始</span><br><span class="line">任务2_4 发布</span><br><span class="line">任务2_4 开始</span><br><span class="line">任务2_2 结束</span><br><span class="line">任务2_4 结束</span><br><span class="line">任务2_1 结束</span><br><span class="line">任务有2 错误: Result(code: 404, message: &quot;任务2_2 完成&quot;, data: nil, results: [])</span><br><span class="line">任务2_3 结束</span><br><span class="line">任务有2 错误: Result(code: 404, message: &quot;任务2_4 错误&quot;, data: nil, results: [])</span><br><span class="line">任务 complete: Result(code: 200, message: &quot;任务2_1 完成&quot;, data: nil, results: [])</span><br><span class="line">任务 complete: Result(code: 200, message: &quot;任务2_3 完成&quot;, data: nil, results: [])</span><br><span class="line">任务 complete: Result(code: 200, message: &quot;&quot;, data: nil, results: [MLibDemo.AsyncTask.Result(code: 200, message: &quot;任务2_1 完成&quot;, data: nil, results: []), MLibDemo.AsyncTask.Result(code: 404, message: &quot;任务2_2 完成&quot;, data: nil, results: []), MLibDemo.AsyncTask.Result(code: 200, message: &quot;任务2_3 完成&quot;, data: nil, results: []), MLibDemo.AsyncTask.Result(code: 404, message: &quot;任务2_4 错误&quot;, data: nil, results: [])])</span><br><span class="line">deinit : 1</span><br><span class="line">任务3 发布</span><br><span class="line">任务3 开始</span><br><span class="line">任务3 结束</span><br><span class="line">任务3 complete: Result(code: 200, message: &quot;&quot;, data: nil, results: [])</span><br><span class="line">deinit : 2</span><br></pre></td></tr></table></figure>
+
 <h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>前面还能说一下思路，到 <code>3.0</code> 已经变成直接上代码，中间试验的时候碰到的问题，基本都写下了，整个解决回调地狱，解决的关键其实是在前面，后面更多是试验，然后封装。</p>
 <blockquote>
 <p>PS：希望对大家有帮助，文笔太差，让大家见笑了。</p>
@@ -719,7 +386,7 @@ static func tasks(_ tasks:[TaskAction]) -&gt; AsyncTask {
         Contents
         </strong>
         <div class="toc-content">
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#回调地狱"><span class="toc-text">回调地狱</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#回调地狱的思考"><span class="toc-text">回调地狱的思考</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#链式编程"><span class="toc-text">链式编程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改的思路"><span class="toc-text">修改的思路</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MyGCD-1-0"><span class="toc-text">MyGCD 1.0</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#链式调用"><span class="toc-text">链式调用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#信号量"><span class="toc-text">信号量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#还是信号量"><span class="toc-text">还是信号量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#回归现实"><span class="toc-text">回归现实</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-0-大功告成"><span class="toc-text">1.0 大功告成</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MyGCD-2-0"><span class="toc-text">MyGCD 2.0</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#增加next"><span class="toc-text">增加next</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#增加-State"><span class="toc-text">增加 State</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#增加-error"><span class="toc-text">增加 error</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#增加complete"><span class="toc-text">增加complete</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改endAction"><span class="toc-text">修改endAction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试"><span class="toc-text">测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#统一错误处理"><span class="toc-text">统一错误处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-0-完成"><span class="toc-text">2.0 完成</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MyGCD-3-0"><span class="toc-text">MyGCD 3.0</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#思考"><span class="toc-text">思考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#任务封装"><span class="toc-text">任务封装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#状态"><span class="toc-text">状态</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#后记"><span class="toc-text">后记</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#代码"><span class="toc-text">代码</span></a></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#回调地狱"><span class="toc-text">回调地狱</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#回调地狱的思考"><span class="toc-text">回调地狱的思考</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#链式编程"><span class="toc-text">链式编程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改的思路"><span class="toc-text">修改的思路</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MyGCD-1-0"><span class="toc-text">MyGCD 1.0</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#链式调用"><span class="toc-text">链式调用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#信号量"><span class="toc-text">信号量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#还是信号量"><span class="toc-text">还是信号量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#回归现实"><span class="toc-text">回归现实</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-0-大功告成"><span class="toc-text">1.0 大功告成</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MyGCD-2-0"><span class="toc-text">MyGCD 2.0</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#增加next"><span class="toc-text">增加next</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#增加-State"><span class="toc-text">增加 State</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#增加-error"><span class="toc-text">增加 error</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#增加complete"><span class="toc-text">增加complete</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改endAction"><span class="toc-text">修改endAction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试"><span class="toc-text">测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#统一错误处理"><span class="toc-text">统一错误处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-0-完成"><span class="toc-text">2.0 完成</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MyGCD-3-0"><span class="toc-text">MyGCD 3.0</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#思考"><span class="toc-text">思考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#任务封装"><span class="toc-text">任务封装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#状态"><span class="toc-text">状态</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结果"><span class="toc-text">结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Task-实现"><span class="toc-text">Task 实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MutiTask-实现"><span class="toc-text">MutiTask 实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AsyncTask-实现"><span class="toc-text">AsyncTask 实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AsyncMutiTask-实现"><span class="toc-text">AsyncMutiTask 实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试-1"><span class="toc-text">测试</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#后记"><span class="toc-text">后记</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#代码"><span class="toc-text">代码</span></a></li></ol></li></ol>
         </div>
     </div>
 
